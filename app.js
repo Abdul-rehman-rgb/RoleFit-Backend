@@ -23,24 +23,46 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.use(
-  asyncHandler(async (req, res, next) => {
+function lazyRouter(modulePath) {
+  let router;
+  return (req, res, next) => {
     try {
-      await connectDB();
-      next();
-    } catch (error) {
-      error.status = 503;
-      throw error;
+      if (!router) {
+        router = require(modulePath);
+      }
+      router(req, res, next);
+    } catch (err) {
+      next(err);
     }
-  })
-);
+  };
+}
 
-app.use("/api/upload", require("./routes/uploads"));
-app.use("/api/analyze", require("./routes/analyze"));
-app.use("/api/auth", require("./routes/auth.routes"));
-app.use("/api/interview", require("./routes/interview.routes"));
+const withDb = asyncHandler(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    error.status = 503;
+    throw error;
+  }
+});
+
+app.use("/api/upload", withDb, lazyRouter("./routes/uploads"));
+app.use("/api/analyze", withDb, lazyRouter("./routes/analyze"));
+app.use("/api/auth", withDb, lazyRouter("./routes/auth.routes"));
+app.use("/api/interview", withDb, lazyRouter("./routes/interview.routes"));
 
 app.use((err, req, res, _next) => {
+  const { getAllowedOrigins } = require("./config/env");
+  const origin = req.headers.origin;
+  if (origin) {
+    const normalized = origin.replace(/\/+$/, "");
+    if (getAllowedOrigins().includes(normalized)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+    }
+  }
+
   console.error("[Error]", err.stack || err.message || err);
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
