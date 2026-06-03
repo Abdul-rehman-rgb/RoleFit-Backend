@@ -13,7 +13,8 @@ function createCorsMiddleware() {
       if (allowedOrigins.includes(normalized)) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      console.warn("[CORS] Blocked origin:", origin);
+      return callback(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

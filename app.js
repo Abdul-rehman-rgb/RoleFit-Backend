@@ -7,10 +7,6 @@ dotenv.config();
 const connectDB = require("./config/db");
 const { createCorsMiddleware } = require("./config/cors");
 const { isProduction } = require("./config/env");
-const uploadRoute = require("./routes/uploads");
-const analyzeRoute = require("./routes/analyze");
-const authRoutes = require("./routes/auth.routes");
-const interviewRoutes = require("./routes/interview.routes");
 
 const app = express();
 
@@ -26,6 +22,16 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
+function lazyRouter(routerPath) {
+  let router;
+  return (req, res, next) => {
+    if (!router) {
+      router = require(routerPath);
+    }
+    return router(req, res, next);
+  };
+}
+
 app.use(async (req, res, next) => {
   try {
     await connectDB();
@@ -36,10 +42,10 @@ app.use(async (req, res, next) => {
   }
 });
 
-app.use("/api/upload", uploadRoute);
-app.use("/api/analyze", analyzeRoute);
-app.use("/api/auth", authRoutes);
-app.use("/api/interview", interviewRoutes);
+app.use("/api/upload", lazyRouter("./routes/uploads"));
+app.use("/api/analyze", lazyRouter("./routes/analyze"));
+app.use("/api/auth", lazyRouter("./routes/auth.routes"));
+app.use("/api/interview", lazyRouter("./routes/interview.routes"));
 
 app.use((err, req, res, _next) => {
   if (err.message?.startsWith("CORS blocked")) {
