@@ -9,7 +9,8 @@ function createCorsMiddleware() {
       if (!origin) {
         return callback(null, true);
       }
-      if (allowedOrigins.includes(origin)) {
+      const normalized = origin.replace(/\/+$/, "");
+      if (allowedOrigins.includes(normalized)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS blocked for origin: ${origin}`));
