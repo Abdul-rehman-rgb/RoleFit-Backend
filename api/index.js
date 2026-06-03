@@ -1,1 +1,3 @@
-module.exports = require("../app");
+const path = require("path");
+
+module.exports = require(path.join(__dirname, "..", "app"));
