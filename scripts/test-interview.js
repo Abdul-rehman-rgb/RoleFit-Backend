@@ -4,7 +4,7 @@
  */
 require("dotenv").config();
 
-const { generateInterviewReport } = require("../services/ai.service");
+const { generateInterviewReport } = require("../services/interviewAi.service");
 
 const sampleResume = `
 John Doe

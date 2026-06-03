@@ -1,5 +1,5 @@
 const InterviewReport = require("../models/interviewReport.model");
-const { generateInterviewReport } = require("../services/ai.service");
+const { generateInterviewReport } = require("../services/interviewAi.service");
 const { removeUploadedFile } = require("../middleware/file.middleware");
 const { parseAiReport, documentToReport } = require("../utils/parseReport");
 

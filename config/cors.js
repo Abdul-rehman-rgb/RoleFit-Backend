@@ -19,7 +19,7 @@ function createCorsMiddleware() {
       if (allowedOrigins.has(normalized)) {
         return callback(null, true);
       }
-      console.warn("[CORS] Blocked origin:", origin, "allowed:", [...allowedOrigins]);
+      console.warn("[CORS] Blocked origin:", origin);
       return callback(null, false);
     },
     credentials: true,
@@ -31,6 +31,8 @@ function createCorsMiddleware() {
       "Accept",
       "X-Requested-With",
     ],
+    exposedHeaders: ["Content-Type"],
+    preflightContinue: false,
     optionsSuccessStatus: 204,
   });
 }

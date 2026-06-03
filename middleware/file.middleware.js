@@ -1,6 +1,5 @@
 const multer = require("multer");
 const mammoth = require("mammoth");
-const { PDFParse } = require("pdf-parse");
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -33,6 +32,7 @@ async function extractTextFromResumeFile(file) {
   const buffer = file.buffer;
 
   if (file.mimetype === "application/pdf") {
+    const { PDFParse } = require("pdf-parse");
     const parser = new PDFParse({ data: buffer });
     try {
       const result = await parser.getText();
