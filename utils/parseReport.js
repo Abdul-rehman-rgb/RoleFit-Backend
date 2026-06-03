@@ -6,6 +6,24 @@ function toMatchPercent(score) {
   return Math.min(100, Math.max(0, Math.round(n)));
 }
 
+function toListArray(value) {
+  if (value == null) return [];
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === "string" ? item.trim() : String(item ?? "").trim()))
+      .filter(Boolean);
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+    return trimmed
+      .split(/\n|•|;/)
+      .map((s) => s.replace(/^[-*]\s*/, "").trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 function unwrapReport(raw) {
   if (Array.isArray(raw)) return raw[0] || null;
   if (raw?.report && typeof raw.report === "object") {
@@ -38,19 +56,17 @@ function deepFindMatchScore(obj, depth = 0) {
 }
 
 function estimateMatchScore(r) {
-  const core = r.core_skills_match || r.coreSkillsMatch || [];
-  const missing = r.missing_skills || r.missingSkills || [];
-  const coreLen = Array.isArray(core) ? core.length : 0;
-  const missingLen = Array.isArray(missing) ? missing.length : 0;
+  const core = toListArray(r.core_skills_match ?? r.coreSkillsMatch);
+  const missing = toListArray(r.missing_skills ?? r.missingSkills);
+  const coreLen = core.length;
+  const missingLen = missing.length;
 
   if (coreLen + missingLen > 0) {
     return Math.round((coreLen / (coreLen + missingLen)) * 100);
   }
 
-  const strengths = r.strengths || [];
-  const weaknesses = r.weaknesses || [];
-  const sLen = strengths.length;
-  const wLen = weaknesses.length;
+  const sLen = toListArray(r.strengths).length;
+  const wLen = toListArray(r.weaknesses).length;
 
   if (sLen + wLen > 0) {
     return Math.min(95, Math.max(20, Math.round((sLen / (sLen + wLen)) * 100)));
@@ -138,10 +154,10 @@ function parseAiReport(raw) {
         "overall_assessment",
         "overallAssessment",
       ]) || "",
-    core_skills_match: r.core_skills_match || r.coreSkillsMatch || [],
-    missing_skills: r.missing_skills || r.missingSkills || [],
-    strengths: r.strengths || [],
-    weaknesses: r.weaknesses || [],
+    core_skills_match: toListArray(r.core_skills_match ?? r.coreSkillsMatch),
+    missing_skills: toListArray(r.missing_skills ?? r.missingSkills),
+    strengths: toListArray(r.strengths),
+    weaknesses: toListArray(r.weaknesses),
     hiring_recommendation:
       deepFindString(r, [
         "hiring_recommendation",
