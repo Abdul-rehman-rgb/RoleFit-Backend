@@ -1,11 +1,10 @@
-const { createCorsMiddleware } = require("../config/cors");
+const { createBaseApp } = require("../lib/expressBase");
 
-const express = require("express");
-const app = express();
+const { app, attachErrorHandler } = createBaseApp();
 
-app.use(createCorsMiddleware());
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
+attachErrorHandler(app);
 
 module.exports = app;

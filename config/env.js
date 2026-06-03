@@ -15,7 +15,7 @@ function getAllowedOrigins() {
     .filter(Boolean);
 
   if (origins.length === 0 && process.env.VERCEL === "1") {
-    return ["https://role-fit-nine.vercel.app"];
+    return ["https://role-fit-nine.vercel.app", "http://localhost:5173"];
   }
 
   return origins;

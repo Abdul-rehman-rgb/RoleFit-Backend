@@ -2,24 +2,36 @@
   "version": 2,
   "installCommand": "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install --omit=dev",
   "rewrites": [
-    {
-      "source": "/api/health",
-      "destination": "/api/health.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
-    }
+    { "source": "/api/health", "destination": "/api/health.js" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth.js" },
+    { "source": "/api/interview/:path*", "destination": "/api/interview.js" },
+    { "source": "/api/upload/:path*", "destination": "/api/upload.js" },
+    { "source": "/api/analyze/:path*", "destination": "/api/analyze.js" }
   ],
   "functions": {
-    "api/index.js": {
+    "api/auth.js": {
+      "maxDuration": 30,
+      "memory": 512,
+      "includeFiles": "routes/**,controllers/**,models/**,middleware/**,config/**,utils/**,lib/**"
+    },
+    "api/interview.js": {
       "maxDuration": 60,
       "memory": 1024,
-      "includeFiles": "routes/**,controllers/**,models/**,middleware/**,config/**,services/**,utils/**"
+      "includeFiles": "routes/**,controllers/**,models/**,middleware/**,config/**,services/**,utils/**,lib/**"
+    },
+    "api/upload.js": {
+      "maxDuration": 30,
+      "memory": 512,
+      "includeFiles": "routes/**,middleware/**,config/**,lib/**"
+    },
+    "api/analyze.js": {
+      "maxDuration": 60,
+      "memory": 512,
+      "includeFiles": "routes/**,middleware/**,config/**,lib/**"
     },
     "api/health.js": {
       "memory": 128,
-      "includeFiles": "config/**"
+      "includeFiles": "config/**,lib/**"
     }
   }
 }
