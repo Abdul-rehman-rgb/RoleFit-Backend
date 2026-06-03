@@ -10,7 +10,9 @@
   ],
   "routes": [
     { "src": "/api/health", "dest": "api/health.js" },
+    { "src": "/api/auth", "dest": "api/auth.js" },
     { "src": "/api/auth/(.*)", "dest": "api/auth.js" },
+    { "src": "/api/interview", "dest": "api/interview.js" },
     { "src": "/api/interview/(.*)", "dest": "api/interview.js" },
     { "src": "/api/upload", "dest": "api/upload.js" },
     { "src": "/api/upload/(.*)", "dest": "api/upload.js" },

@@ -24,7 +24,13 @@ function createCorsMiddleware() {
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cookie",
+      "Accept",
+      "X-Requested-With",
+    ],
     optionsSuccessStatus: 204,
   });
 }
