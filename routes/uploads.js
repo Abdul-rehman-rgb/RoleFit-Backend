@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
-const { PDFParse } = require("pdf-parse");
-const mammoth = require('mammoth');
+const mammoth = require("mammoth");
+const { extractPdfText } = require("../utils/pdfText");
 const { protect } = require('../middleware/auth.middleware');
 const router = express.Router();
 
@@ -21,14 +21,8 @@ const upload = multer({
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
     let text = '';
-    if (req.file.mimetype === 'application/pdf') {
-      const parser = new PDFParse({ data: req.file.buffer });
-      try {
-        const data = await parser.getText();
-        text = data.text || "";
-      } finally {
-        await parser.destroy();
-      }
+    if (req.file.mimetype === "application/pdf") {
+      text = await extractPdfText(req.file.buffer);
     } else {
       const result = await mammoth.extractRawText({ buffer: req.file.buffer });
       text = result.value;
