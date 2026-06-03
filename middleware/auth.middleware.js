@@ -3,33 +3,43 @@ const User = require("../models/user.model");
 const blacklistModel = require("../models/blacklist.model");
 
 const protect = async (req, res, next) => {
-  try {
-    const token = req.cookies.token;
+  const token = req.cookies?.token;
 
-    if (!token) {
-      return res.status(401).json({ message: "Not authorized, no token" });
-    }
-
-    const blacklisted = await blacklistModel.findOne({ token });
-    if (blacklisted) {
-      return res.status(401).json({ message: "Not authorized, token revoked" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) {
-      return res.status(401).json({ message: "Not authorized, user not found" });
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Not authorized, invalid token" });
-    }
-    res.status(500).json({ message: error.message });
+  if (!token) {
+    const err = new Error("Not authorized, no token");
+    err.status = 401;
+    throw err;
   }
+
+  const blacklisted = await blacklistModel.findOne({ token });
+  if (blacklisted) {
+    const err = new Error("Not authorized, token revoked");
+    err.status = 401;
+    throw err;
+  }
+
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not set");
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    const err = new Error("Not authorized, invalid token");
+    err.status = 401;
+    throw err;
+  }
+
+  const user = await User.findById(decoded.id).select("-password");
+  if (!user) {
+    const err = new Error("Not authorized, user not found");
+    err.status = 401;
+    throw err;
+  }
+
+  req.user = user;
+  next();
 };
 
 module.exports = { protect };

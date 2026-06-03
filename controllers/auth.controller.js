@@ -5,6 +5,9 @@ const blacklistModel = require("../models/blacklist.model");
 const { getAuthCookieOptions } = require("../config/cookie");
 
 const generateToken = (userId) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not set");
+  }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
@@ -49,6 +52,7 @@ exports.register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("[Auth register]", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -86,6 +90,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("[Auth login]", error.message);
     res.status(500).json({ message: error.message });
   }
 };

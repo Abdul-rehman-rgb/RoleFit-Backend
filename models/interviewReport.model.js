@@ -139,4 +139,6 @@ const interviewReportSchema = new mongoose.Schema({
   preparationPlan: [preparationPlanSchema],
 }, { timestamps: true });
 
-module.exports = mongoose.model("InterviewReport", interviewReportSchema);
+module.exports =
+  mongoose.models.InterviewReport ||
+  mongoose.model("InterviewReport", interviewReportSchema);

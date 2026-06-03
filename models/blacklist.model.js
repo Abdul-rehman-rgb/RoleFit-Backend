@@ -8,4 +8,5 @@ const blacklistSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Blacklist", blacklistSchema);
+module.exports =
+  mongoose.models.Blacklist || mongoose.model("Blacklist", blacklistSchema);
