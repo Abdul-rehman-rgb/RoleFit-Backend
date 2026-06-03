@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "vercel-build": "echo \"No build step\"",
     "test:interview": "node scripts/test-interview.js"
   },
   "keywords": [],
@@ -15,7 +14,7 @@
   "license": "ISC",
   "type": "commonjs",
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
   },
   "dependencies": {
     "@google/genai": "^2.7.0",
